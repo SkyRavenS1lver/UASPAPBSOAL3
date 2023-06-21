@@ -12,10 +12,16 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 
 public class MainActivity extends AppCompatActivity {
     //Tambahan
+    ObjectAnimator fadeInAnimation;
+    ObjectAnimator fadeOutAnimation;
+    ObjectAnimator rotateAnimation;
+    AnimatorSet animatorSet = new AnimatorSet();
+    int ANIMATION_DURATION = 1000;
     float leftEye;
     float rightEye;
     float eyeRad;
@@ -43,9 +49,31 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mImgView = findViewById(R.id.my_img_view);
-
         mCirclePaint.setColor(getResources().getColor(R.color.black));
         mHeadPaint.setColor(getResources().getColor(R.color.white));
+        mImgView.setAlpha(0f);
+
+        //Tambahan
+        fadeInAnimation = ObjectAnimator.ofFloat(mImgView,"alpha",0f, 1f);
+        fadeInAnimation.setDuration(ANIMATION_DURATION);
+        fadeInAnimation.setInterpolator(new LinearInterpolator());
+        fadeOutAnimation = ObjectAnimator.ofFloat(mImgView, "alpha", 1f, 0f);
+        fadeOutAnimation.setDuration(ANIMATION_DURATION);
+        fadeOutAnimation.setInterpolator(new LinearInterpolator());
+        rotateAnimation = ObjectAnimator.ofFloat(mImgView, "rotationY", 0f, 180f);
+        rotateAnimation.setDuration(ANIMATION_DURATION).setStartDelay(ANIMATION_DURATION);
+        rotateAnimation.setInterpolator(new LinearInterpolator());
+        animatorSet.play(fadeOutAnimation).after(rotateAnimation).after(fadeInAnimation);
+
+
+        mImgView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                animatorSet.start();
+            }
+        });
+        //End
+
     }
 
     @Override
